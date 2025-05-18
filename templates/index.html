@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Career Counselling Portal</title>
+  <script src="static/js/main.js" defer></script>
+</head>
+<style>
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  :root {
+    --primary-color: #2e2a5d; /* Deep Royal Purple */
+    --secondary-color: #3f3a72; /* Rich Indigo */
+    --accent-color: #9473e6; /* Lavender Accents */
+    --background-color: #f4f4fb; /* Light Misty Background */
+    --dark-text: #1f1e2e;
+    --medium-text: #3e3b5b;
+    --light-text: #6b6b91;
+    --shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.1);
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --container-width: 1200px;
+  }
+  
+  body {
+    background-color: var(--background-color);
+    color: var(--dark-text);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Remove vertical centering so content sits at top */
+    justify-content: flex-start;
+    padding-top: 80px; /* Give space for fixed navbar */
+    overflow-x: hidden;
+  }
+  
+  
+  .navbar {
+    background-color: white;
+    width: 100%;
+    max-width: var(--container-width);
+    padding: 1rem 2rem;
+    box-shadow: var(--shadow-lg);
+    position: fixed;
+    top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  nav {
+    display: flex;
+    gap: 1.5rem;
+  }
+  
+  .btn {
+    padding: 0.6rem 1.4rem;
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .btn:hover {
+    background-color: var(--accent-color);
+    
+  }
+  
+  
+  .hero {
+    width: 100%;
+    max-width: var(--container-width);
+    background: none; /* remove gradient background */
+    padding: 2rem 2rem 3rem 2rem;
+    text-align: center;
+    animation: none; /* remove animation if you want */
+  }
+  
+  .hero h1 {
+    font-size: 2.8rem;
+    color: var(--primary-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+  }
+  
+  .hero p {
+    font-size: 1.25rem;
+    margin-bottom: 25px;
+    color: var(--medium-text);
+    opacity: 1;
+  }
+  
+  
+  .features {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 40px 2rem 60px 2rem;
+    max-width: var(--container-width);
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  
+  .feature {
+    background: white;
+    padding: 30px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    width: 260px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: default;
+  }
+  
+  .feature:hover {
+    transform: translateY(-10px);
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+  }
+  
+  .feature img {
+    width: 50px;
+    margin-bottom: 20px;
+  }
+  
+  
+  footer {
+    background-color: var(--primary-color);
+    padding: 1.5rem 0;
+    color: white;
+    text-align: center;
+    width: 100%;
+    max-width: var(--container-width);
+    margin: 0 auto;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    position: relative; /* no fixed footer */
+  }
+  
+  
+  @media (max-width: 768px) {
+    .navbar {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  
+    .features {
+      justify-content: center;
+      gap: 20px;
+      padding: 30px 1rem 40px 1rem;
+    }
+  
+    .feature {
+      width: 90%;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .hero h1 {
+      font-size: 2rem;
+    }
+  
+    .hero p {
+      font-size: 1rem;
+    }
+  
+    .btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+  
+    .feature {
+      width: 100%;
+      padding: 20px;
+    }
+  }
+  
+</style>
+<body>
+  <header class="navbar">
+    <div class="logo">CareerConnect</div>
+    <nav>
+      <a href="/login" class="btn">Login</a>
+      <a href="/register" class="btn">Register</a>
+      <a href="/dashboard" class="btn">Dashboard</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Career Counselling Management System</h1>
+    <p>Efficiently manage students, counsellors, sessions, and career resources.</p>
+    <a href="/register" class="btn">Register Now</a> 
+  </section>
+  <section class="testimonials">
+    <h2>What Our Users Say</h2>
+    <div class="testimonial-card">
+      <p>"CareerConnect helped me discover my true potential and find the right career path."</p>
+      <span>- Aditi Sharma, Student</span>
+    </div>
+    <div class="testimonial-card">
+      <p>"As a counsellor, this platform has streamlined my appointment management significantly."</p>
+      <span>- Dr. Raj Mehra, Career Counsellor</span>
+    </div>
+  </section>
+ <br>
+  <section class="cta">
+    <h2>Ready to Take the Next Step in Your Career?</h2>
+    <p>Join CareerConnect to explore career paths, access expert counselling, and reach your goals.</p>
+   
+  </section>
+  <br>
+  <section class="login-board">
+    <h2>Login As</h2>
+    <div class="login-options">
+      <a href="/auth/login" class="btn">Student</a>
+      <a href="/counsellor/login" class="btn">Counsellor</a>
+    </div>
+  </section>
+  
+  <br>
+  <section class="faq">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-item">
+      <h3>How can I book a counselling session?</h3>
+      <p>Register as a student, navigate to the dashboard, and schedule an appointment with an available counsellor.</p>
+    </div>
+    <div class="faq-item">
+      <h3>How do I become a counsellor on CareerConnect?</h3>
+      <p>Register as a counsellor, fill out your profile, and wait for approval from the admin team.</p>
+    </div>
+  </section>
+  <section class="features">
+    <div class="feature fade-in">
+      <img src="{{ url_for('static', filename='images/records.jpg') }}" alt="Student Records">
+      <h3>Manage Student Records</h3>
+      <p>Track student profiles, career interests, and uploaded documents.</p>
+    </div>
+
+    <div class="feature fade-in">
+      <img src="{{ url_for('static', filename='images/pic2.jpg') }}" alt="Appointments" height='60' width='130'>
+      <h3>Schedule Appointments</h3>
+      <p>Students can book counselling sessions with available counsellors.</p>
+    </div>
+
+    <div class="feature fade-in">
+      <img src="{{ url_for('static', filename='images/resources.jpg') }}" alt="Resources">
+      <h3>Access Career Resources</h3>
+      <p>View and manage career guidance materials and useful resources.</p>
+    </div>
+
+    <div class="feature fade-in">
+      <img src="{{ url_for('static', filename='images/feedback.jpg') }}" alt="Feedback">
+      <h3>Submit Feedback</h3>
+      <p>Students can rate and review their counselling experience.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 CareerConnect. All rights reserved.</p>
+  </footer>
+</body>
+</html>

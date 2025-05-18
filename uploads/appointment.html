@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Appointment - CareerConnect</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">CareerConnect</div>
+    <nav>
+      <a href="/dashboard" class="btn">Dashboard</a>
+      <a href="/upload_documents" class="btn">Upload Documents</a>
+      <a href="/feedback" class="btn">Feedback</a>
+    </nav>
+  </header>
+
+  <section class="appointments-container">
+    <h2>Book a Counselling Appointment</h2>
+    <p class="subtitle">Choose your preferred date and time with a counselor.</p>
+    <form action="/book_appointment" method="POST" class="appointment-form">
+      <div class="form-group">
+        <label for="student_id">Student ID:</label>
+        <input type="text" id="student_id" name="student_id" required>
+      </div>
+
+      <div class="form-group">
+        <label for="counselor_id">Counselor ID:</label>
+        <input type="text" id="counselor_id" name="counselor_id" required>
+      </div>
+
+      <div class="form-group">
+        <label for="appointment_date">Select Date:</label>
+        <input type="date" id="appointment_date" name="appointment_date" required>
+      </div>
+
+      <div class="form-group">
+        <label for="appointment_time">Select Time:</label>
+        <select id="appointment_time" name="appointment_time" required>
+          <option value="9:00 AM">9:00 AM</option>
+          <option value="10:00 AM">10:00 AM</option>
+          <option value="11:00 AM">11:00 AM</option>
+          <option value="12:00 PM">12:00 PM</option>
+          <option value="1:00 PM">1:00 PM</option>
+          <option value="2:00 PM">2:00 PM</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn-primary">Book Appointment</button>
+    </form>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 CareerConnect. All rights reserved.</p>
+  </footer>
+</body>
+</html>

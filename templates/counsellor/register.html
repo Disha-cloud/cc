@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Counsellor Register - CareerConnect</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">
+          <a href="/" style="color: inherit; text-decoration: none;">CareerConnect</a>
+        </div>
+    <nav>
+      <a href="/counsellor/login" class="btn">Login</a>
+      
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="register-container">
+      <h2>Register as a Counsellor</h2>
+      <form method="POST" action="/counselors/register" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="full_name">Full Name</label>
+          <input type="text" id="full_name" name="full_name" placeholder="Enter your full name" required />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="Enter your email" required />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Create a password" required />
+        </div>
+
+        <div class="form-group">
+          <label for="confirm_password">Confirm Password</label>
+          <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required />
+        </div>
+
+        <div class="form-group">
+          <label for="specialization">Specialization</label>
+          <input type="text" id="specialization" name="specialization" placeholder="e.g. Career Guidance, Mental Health" required />
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Contact Number</label>
+          <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" />
+        </div>
+
+        <div class="form-group">
+          <label for="resume">Upload Resume (optional)</label>
+          <input type="file" id="resume" name="resume" accept=".pdf,.doc,.docx" />
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Register</button>
+      </form>
+
+      <p class="register-link">
+        Already have an account? <a href="/counsellor/login">Sign in here</a>
+      </p>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 CareerConnect. All rights reserved.</p>
+  </footer>
+</body>
+</html>

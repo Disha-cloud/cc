@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback - CareerConnect</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">CareerConnect</div>
+    <nav>
+      <a href="/dashboard" class="btn">Dashboard</a>
+      <a href="/upload_documents" class="btn">Upload Documents</a>
+      <a href="/book_appointment" class="btn">Book Appointment</a>
+    </nav>
+  </header>
+
+  <section class="feedback-container">
+    <h2>Submit Your Feedback</h2>
+    <p class="subtitle">Help us improve your experience.</p>
+    <form action="/submit_feedback" method="POST" class="feedback-form">
+      <textarea name="feedback" placeholder="Write your feedback here..." required></textarea>
+      <button type="submit" class="btn-primary">Submit Feedback</button>
+    </form>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 CareerConnect. All rights reserved.</p>
+  </footer>
+</body>
+</html>

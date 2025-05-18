@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Student Dashboard - CareerConnect</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">
+      <a href="{{ url_for('index') }}" style="color: inherit; text-decoration: none;">CareerConnect</a>
+    </div>
+    <nav>
+      <a href="{{ url_for('logout') }}" class="btn">Logout</a>
+    </nav>
+  </header>
+
+  <main class="dashboard-container">
+    <h1>Welcome to Your Dashboard, {{ current_user.name }}!</h1>
+
+    <section class="profile-section">
+      <h2>Your Profile</h2>
+      <p><strong>Name:</strong> {{ current_user.name }}</p>
+      <p><strong>Email:</strong> {{ current_user.email }}</p>
+      <p><strong>Course:</strong> {{ current_user.course or 'Not specified' }}</p>
+    </section>
+
+    <section class="assessment-section">
+      <h2>Career Assessment Results</h2>
+      <p>Your top career matches:</p>
+      <ul>
+        <li>Data Scientist</li>
+        <li>Software Engineer</li>
+        <li>Machine Learning Specialist</li>
+      </ul>
+    </section>
+
+    <section class="recommendations-section">
+      <h2>Recommended Jobs/Careers</h2>
+      <div class="recommendation-card">
+        <h3>Data Scientist at TechCorp</h3>
+        <p>Location: Remote</p>
+        <button class="btn">Apply Now</button>
+      </div>
+      <div class="recommendation-card">
+        <h3>Software Engineer at WebWorks</h3>
+        <p>Location: New York, USA</p>
+        <button class="btn">Apply Now</button>
+      </div>
+    </section>
+
+    <section class="appointment-section">
+      <h2>Schedule an Appointment</h2>
+      <p>Book a session with a career counsellor:</p>
+      <button class="btn">Book Now</button>
+    </section>
+
+    <section class="resources-section">
+      <h2>Career Resources</h2>
+      <div class="resource-card">
+        <h3>Resume Writing Guide</h3>
+        <a href="{{ url_for('static', filename='resources/resume_guide.pdf') }}" target="_blank" class="btn">View Resource</a>
+      </div>
+      <div class="resource-card">
+        <h3>Top Interview Tips</h3>
+        <a href="{{ url_for('static', filename='resources/interview_tips.pdf') }}" target="_blank" class="btn">View Resource</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 CareerConnect. All rights reserved.</p>
+  </footer>
+</body>
+</html>
