@@ -1,13 +1,9 @@
-from datetime import datetime
-from models import db
+from models import db  # Import db from the models package
 
 class Feedback(db.Model):
-    __tablename__ = 'feedback'
-    
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    counselor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    appointment_id = db.Column(db.Integer, db.ForeignKey('appointments.id'), nullable=True)
-    rating = db.Column(db.Integer, nullable=False)
-    comments = db.Column(db.Text, nullable=True)
-    submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    student_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    mentor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    feedback_type = db.Column(db.String(50))
+    feedback_text = db.Column(db.Text)
+    date_submitted = db.Column(db.DateTime)

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Feedback Form - CareerConnect</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    function toggleMentorField() {
+      const type = document.getElementById("feedback_type").value;
+      const mentorField = document.getElementById("mentor-section");
+      mentorField.style.display = (type === "mentor") ? "block" : "none";
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      toggleMentorField();
+    });
+  </script>
+</head>
+
+<body>
+  <section class="feedback-section">
+    <div class="feedback-container">
+      <h2>We Value Your Feedback</h2>
+      <form action="{{ url_for('submit_feedback') }}" method="post">
+        <label for="feedback_type">Feedback Type:</label>
+        <select id="feedback_type" name="feedback_type" onchange="toggleMentorField()" required>
+          <option value="">-- Select --</option>
+          <option value="mentor">Mentor</option>
+          <option value="website">Website</option>
+        </select>
+
+        <div id="mentor-section" style="display: none;">
+          <label>Mentor Assigned:</label>
+          <input type="text" name="mentor_name" value="{{ mentor_name }}" readonly>
+          <input type="hidden" name="mentor_id" value="{{ mentor_id }}">
+        </div>
+
+        <label for="feedback">Your Feedback:</label>
+        <textarea id="feedback" name="feedback" rows="5" required></textarea>
+
+        <button type="submit" class="submit-feedback">Submit Feedback</button>
+      </form>
+    </div>
+  </section>
+</body>
+</html>

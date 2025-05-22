@@ -1,16 +1,25 @@
-DROP DATABASE career_counselling;
-CREATE DATABASE career_counselling;
-USE career_counselling;
-
+DROP DATABASE cc;
+CREATE DATABASE cc;
+USE cc;
 CREATE TABLE users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100),
     email VARCHAR(100) UNIQUE NOT NULL,
+    phone VARCHAR(20),
+    dob DATE,
+    address TEXT,
+    education_level VARCHAR(100),
+    interests TEXT,
+    counselor_id INT,
     password_hash VARCHAR(255) NOT NULL,
+    user_role ENUM('student', 'counsellor', 'admin') DEFAULT 'student',
+    course VARCHAR(100),
     date_registered DATETIME DEFAULT CURRENT_TIMESTAMP,
-    user_role ENUM('student', 'counsellor', 'admin') DEFAULT 'student'
+    last_login DATETIME DEFAULT NULL
 );
+
+
 
 CREATE TABLE appointments (
     appointment_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -144,14 +153,3 @@ CREATE TABLE CareerCounselors (
     FOREIGN KEY (counsellor_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 SELECT * FROM users;
-
-
-
-
-
-
-
-
-
-
-

@@ -1,23 +1,40 @@
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin
+from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-
-db = SQLAlchemy()
-login_manager = LoginManager()
+from models import db  # Make sure this points to your initialized SQLAlchemy instance
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
     user_id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(100), nullable=False)
-    last_name = db.Column(db.String(100), nullable=True)
+    last_name = db.Column(db.String(100))
     email = db.Column(db.String(120), unique=True, nullable=False)
+    phone = db.Column(db.String(20), nullable=True)
+    dob = db.Column(db.Date, nullable=True)
+    address = db.Column(db.String(255), nullable=True)
+    education_level = db.Column(db.String(100), nullable=True)
+    interests = db.Column(db.String(255), nullable=True)  # stored as comma-separated string
+    counselor_id = db.Column(db.Integer, nullable=True)
+
     password_hash = db.Column(db.String(128), nullable=False)
     user_role = db.Column(db.String(20), nullable=False, default='student')
     course = db.Column(db.String(100), nullable=True)
     date_registered = db.Column(db.DateTime, default=datetime.utcnow)
-    last_login = db.Column(db.DateTime, nullable=True)
+    last_login = db.Column(db.DateTime)
+class CareerCounselor(db.Model):
+    __tablename__ = 'CareerCounselors'
+    counsellor_id = db.Column(db.Integer, db.ForeignKey('users.user_id', ondelete='CASCADE'), primary_key=True)
+    specialization = db.Column(db.String(100))
+    qualification = db.Column(db.Text)
+    years_of_experience = db.Column(db.Integer)
+    bio = db.Column(db.Text)
+    availability_status = db.Column(db.Boolean, default=True)
+    rating = db.Column(db.Numeric(3, 2), default=0.0)
+    
+    @property
+    def id(self):
+        return self.user_id
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)
@@ -36,7 +53,3 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f"<User {self.email} - {self.user_role}>"
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))

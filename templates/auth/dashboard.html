@@ -2,76 +2,148 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Student Dashboard - CareerConnect</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ student.first_name }}'s Dashboard - CareerConnect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f8f9fc;
+      color: #333;
+    }
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background:rgb(18, 28, 62);
+      padding: 1rem 2rem;
+      color: white;
+    }
+    .dashboard-header .logo {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    .dashboard-header nav a {
+      color: white;
+      text-decoration: none;
+      background:rgb(20, 24, 47);
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    .dashboard-container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 2rem;
+    }
+    section {
+      background: white;
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+    h2, h3 {
+      color: #2c3e50;
+    }
+    .profile-info, .session-list, .resource-list {
+      list-style-type: none;
+      padding: 0;
+    }
+    .profile-info li, .session-list li, .resource-list li {
+      margin-bottom: 0.5rem;
+    }
+    .btn-action {
+      display: inline-block;
+      margin-top: 1rem;
+      background:rgb(18, 39, 93);
+      color: white;
+      text-decoration: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+    .btn-action:hover {
+      background:rgb(94, 98, 162);
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #ecf0f1;
+      font-size: 0.9rem;
+      color: #777;
+    }
+  </style>
 </head>
 <body>
-  <header class="navbar">
-    <div class="logo">
-      <a href="{{ url_for('index') }}" style="color: inherit; text-decoration: none;">CareerConnect</a>
-    </div>
+  <header class="dashboard-header">
+    <div class="logo">CareerConnect</div>
     <nav>
-      <a href="{{ url_for('logout') }}" class="btn">Logout</a>
+      <a href="/logout" class="btn-logout">Logout</a>
     </nav>
   </header>
 
   <main class="dashboard-container">
-    <h1>Welcome to Your Dashboard, {{ current_user.name }}!</h1>
-
-    <section class="profile-section">
-      <h2>Your Profile</h2>
-      <p><strong>Name:</strong> {{ current_user.name }}</p>
-      <p><strong>Email:</strong> {{ current_user.email }}</p>
-      <p><strong>Course:</strong> {{ current_user.course or 'Not specified' }}</p>
+    <section class="welcome-section">
+      <h2>Welcome, {{ student.first_name }} 👋</h2>
+      <p>Your personalized career dashboard</p>
     </section>
 
-    <section class="assessment-section">
-      <h2>Career Assessment Results</h2>
-      <p>Your top career matches:</p>
-      <ul>
-        <li>Data Scientist</li>
-        <li>Software Engineer</li>
-        <li>Machine Learning Specialist</li>
+    <section class="profile-section">
+      <h3>Your Profile</h3>
+      <ul class="profile-info">
+        <li><strong>Email:</strong> {{ student.email }}</li>
+        <li><strong>Phone:</strong> {{ student.phone }}</li>
+        <li><strong>Education Level:</strong> {{ student.education_level }}</li>
+        <li><strong>Date of Birth:</strong> {{ student.dob }}</li>
+        <li><strong>Address:</strong> {{ student.address }}</li>
+        <li><strong>Career Interests:</strong> {{ student.interests | join(', ') }}</li>
+        <li><strong>Assigned Counselor:</strong> {{ student.counselor_name }}</li>
       </ul>
     </section>
 
-    <section class="recommendations-section">
-      <h2>Recommended Jobs/Careers</h2>
-      <div class="recommendation-card">
-        <h3>Data Scientist at TechCorp</h3>
-        <p>Location: Remote</p>
-        <button class="btn">Apply Now</button>
-      </div>
-      <div class="recommendation-card">
-        <h3>Software Engineer at WebWorks</h3>
-        <p>Location: New York, USA</p>
-        <button class="btn">Apply Now</button>
-      </div>
-    </section>
-
-    <section class="appointment-section">
-      <h2>Schedule an Appointment</h2>
-      <p>Book a session with a career counsellor:</p>
-      <button class="btn">Book Now</button>
+    <section class="session-section">
+      <h3>Upcoming Sessions</h3>
+      {% if student.sessions %}
+        <ul class="session-list">
+          {% for session in student.sessions %}
+            <li>
+              <strong>{{ session.date }}</strong> with {{ session.counselor }} at {{ session.time }}
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No upcoming sessions scheduled.</p>
+      {% endif %}
+      <a href="/auth/appointment" class="btn-action">📅 Book an Appointment</a>
     </section>
 
     <section class="resources-section">
-      <h2>Career Resources</h2>
-      <div class="resource-card">
-        <h3>Resume Writing Guide</h3>
-        <a href="{{ url_for('static', filename='resources/resume_guide.pdf') }}" target="_blank" class="btn">View Resource</a>
-      </div>
-      <div class="resource-card">
-        <h3>Top Interview Tips</h3>
-        <a href="{{ url_for('static', filename='resources/interview_tips.pdf') }}" target="_blank" class="btn">View Resource</a>
-      </div>
+      <h3>Recommended Resources</h3>
+      {% if student.resources %}
+        <ul class="resource-list">
+          {% for resource in student.resources %}
+            <li><a href="{{ resource.link }}" target="_blank">{{ resource.title }}</a></li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No resources assigned yet. Check back soon!</p>
+      {% endif %}
+    </section>
+
+    <section class="feedback-section">
+      <h3>Feedback</h3>
+      <p>Help us improve your experience.</p>
+      <a href="/auth/feedback" class="btn-action">💬 Give Feedback</a>
     </section>
   </main>
 
   <footer>
-    <p>&copy; 2025 CareerConnect. All rights reserved.</p>
+    <p>&copy; 2025 CareerConnect. Empowering your future.</p>
   </footer>
 </body>
 </html>
