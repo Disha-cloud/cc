@@ -232,6 +232,16 @@
       {% endif %}
     </section>
 
+    <!-- Counselor Chat/Message -->
+    <section class="chat-section">
+      <h3>Message Your Counselor</h3>
+      {% if student.counselor_id %}
+        <a href="{{ url_for('chat', user_id=student.counselor_id) }}" class="btn-action">💬 Chat with Your Counselor</a>
+      {% else %}
+        <p>No counselor assigned yet. Please contact the administrator.</p>
+      {% endif %}
+    </section>
+
     <!-- Notifications & Announcements -->
     <section class="notifications-section">
       <h3>Notifications</h3>

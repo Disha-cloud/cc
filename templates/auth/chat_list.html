@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conversations - CareerConnect</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .conversations-container {
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: 2rem;
+      margin: 2rem auto;
+      max-width: 800px;
+    }
+    
+    .conversations-container h2 {
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    
+    .conversation-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .conversation-card {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      background: #f8f9ff;
+      border: 2px solid #e0e0f8;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    .conversation-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--primary-color);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      margin-right: 1rem;
+    }
+    
+    .conversation-details {
+      flex: 1;
+    }
+    
+    .conversation-details h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--dark-text);
+    }
+    
+    .last-message {
+      font-size: 0.9rem;
+      color: var(--medium-text);
+      margin: 0.3rem 0 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 400px;
+    }
+    
+    .conversation-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    
+    .time {
+      font-size: 0.8rem;
+      color: var(--light-text);
+    }
+    
+    .unread-count {
+      background: var(--accent-color);
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      margin-top: 0.3rem;
+    }
+    
+    .no-conversations {
+      text-align: center;
+      color: var(--light-text);
+      padding: 2rem;
+    }
+    
+    .status-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 0.5rem;
+    }
+    
+    .status-online {
+      background: #4CAF50;
+    }
+    
+    .status-offline {
+      background: #9e9e9e;
+    }
+    
+    .status-text {
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">CareerConnect</div>
+    <nav>
+      <a href="{{ url_for('student_dashboard') }}" class="btn">Dashboard</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="conversations-container">
+      <h2>Your Conversations</h2>
+      
+      {% if conversations %}
+        <div class="conversation-list">
+          {% for conversation in conversations %}
+            <a href="{{ url_for('chat', user_id=conversation.user.user_id) }}" class="conversation-card">
+              <div class="avatar">{{ conversation.user.first_name[0] }}{{ conversation.user.last_name[0] }}</div>
+              
+              <div class="conversation-details">
+                <h3>{{ conversation.user.first_name }} {{ conversation.user.last_name }}</h3>
+                <p class="status-text">
+                  <span class="status-indicator {% if conversation.user.is_online %}status-online{% else %}status-offline{% endif %}"></span>
+                  {% if conversation.user.is_online %}Online{% else %}Last seen: {{ conversation.user.last_login|timeago }}{% endif %}
+                </p>
+                <p class="last-message">
+                  {% if conversation.last_message %}
+                    {% if conversation.last_message.sender_id == current_user.user_id %}
+                      You: {{ conversation.last_message.content }}
+                    {% else %}
+                      {{ conversation.last_message.content }}
+                    {% endif %}
+                  {% else %}
+                    Start a conversation
+                  {% endif %}
+                </p>
+              </div>
+              
+              <div class="conversation-meta">
+                {% if conversation.last_message %}
+                  <span class="time">{{ conversation.last_message.sent_at|timeago }}</span>
+                {% endif %}
+                
+                {% if conversation.unread_count > 0 %}
+                  <span class="unread-count">{{ conversation.unread_count }}</span>
+                {% endif %}
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="no-conversations">
+          <p>You don't have any conversations yet.</p>
+          {% if current_user.user_role == 'student' and current_user.counselor_id %}
+            <a href="{{ url_for('chat', user_id=current_user.counselor_id) }}" class="btn">Message Your Counselor</a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 CareerConnect. All rights reserved.</p>
+  </footer>
+</body>
+</html>

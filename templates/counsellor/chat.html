@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat with Student - CareerConnect</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 70vh;
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+    
+    .chat-header {
+      background: var(--primary-color);
+      color: white;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .chat-header h3 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+    
+    .student-info {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+    
+    .chat-messages {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .message {
+      max-width: 70%;
+      padding: 0.8rem 1rem;
+      border-radius: 1rem;
+      position: relative;
+      margin-bottom: 0.5rem;
+    }
+    
+    .message.sent {
+      align-self: flex-end;
+      background: var(--primary-color);
+      color: white;
+      border-bottom-right-radius: 0.3rem;
+    }
+    
+    .message.received {
+      align-self: flex-start;
+      background: #f0f0f8;
+      color: var(--dark-text);
+      border-bottom-left-radius: 0.3rem;
+    }
+    
+    .message-time {
+      font-size: 0.7rem;
+      opacity: 0.8;
+      margin-top: 0.3rem;
+      text-align: right;
+    }
+    
+    .chat-input {
+      display: flex;
+      padding: 1rem;
+      background: #f8f9fc;
+      border-top: 1px solid #e6e9f0;
+    }
+    
+    .chat-input input {
+      flex: 1;
+      padding: 0.8rem;
+      border: 2px solid #e0e0f8;
+      border-radius: var(--radius-md);
+      margin-right: 0.5rem;
+    }
+    
+    .chat-input button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0 1.5rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .chat-input button:hover {
+      background: var(--accent-color);
+    }
+    
+    .quick-actions {
+      padding: 0.5rem 1rem;
+      background: #f8f9fc;
+      border-top: 1px solid #e6e9f0;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .quick-action {
+      background: white;
+      border: 1px solid #e0e0f8;
+      border-radius: var(--radius-md);
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .quick-action:hover {
+      background: #f0f0f8;
+      border-color: var(--primary-color);
+    }
+    
+    .no-messages {
+      text-align: center;
+      color: var(--light-text);
+      margin: auto;
+    }
+    
+    .typing-indicator {
+      align-self: flex-start;
+      padding: 0.5rem 1rem;
+      color: var(--light-text);
+      font-style: italic;
+      font-size: 0.9rem;
+      display: none;
+    }
+    
+    .back-link {
+      margin-bottom: 1rem;
+      display: inline-block;
+    }
+    
+    .student-details {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .student-details h3 {
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+    
+    .detail-row {
+      display: flex;
+      margin-bottom: 0.5rem;
+    }
+    
+    .detail-label {
+      width: 150px;
+      font-weight: 600;
+      color: var(--medium-text);
+    }
+    
+    .detail-value {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">CareerConnect</div>
+    <nav>
+      <a href="{{ url_for('counsellor_dashboard') }}" class="btn">Dashboard</a>
+    </nav>
+  </header>
+
+  <main class="container" style="max-width: 900px; margin: 2rem auto; padding: 0 1rem;">
+    <a href="{{ url_for('counsellor_chat_list') }}" class="back-link">&larr; Back to conversations</a>
+    
+    <div class="student-details">
+      <h3>Student Details</h3>
+      <div class="detail-row">
+        <div class="detail-label">Name:</div>
+        <div class="detail-value">{{ student.first_name }} {{ student.last_name }}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Email:</div>
+        <div class="detail-value">{{ student.email }}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Education:</div>
+        <div class="detail-value">{{ student.education_level }}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Interests:</div>
+        <div class="detail-value">{{ student.interests }}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Last Login:</div>
+        <div class="detail-value">{{ student.last_login }}</div>
+      </div>
+    </div>
+    
+    <div class="chat-container">
+      <div class="chat-header">
+        <h3>
+          Chat with: {{ student.first_name }} {{ student.last_name }}
+          {% if student.is_online %}
+            <span class="status-badge online">Online</span>
+          {% else %}
+            <span class="status-badge offline">Offline</span>
+          {% endif %}
+        </h3>
+        <div class="student-info">
+          <span>{{ student.education_level }} Student</span>
+          <span>{{ student.course }}</span>
+        </div>
+      </div>
+      
+      <div class="chat-messages" id="messages">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="message {% if message.sender_id == current_user.user_id %}sent{% else %}received{% endif %}">
+              {{ message.content }}
+              <div class="message-time">{{ message.sent_at.strftime('%I:%M %p | %b %d') }}</div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="no-messages">
+            <p>No messages yet. Start the conversation!</p>
+          </div>
+        {% endif %}
+        <div class="typing-indicator" id="typing-indicator">{{ student.first_name }} is typing...</div>
+      </div>
+      
+      <div class="quick-actions">
+        <button class="quick-action" onclick="insertQuickReply('I\'ve reviewed your profile and would like to discuss your career goals.')">Discuss Career Goals</button>
+        <button class="quick-action" onclick="insertQuickReply('Would you like to schedule an appointment to discuss this further?')">Suggest Appointment</button>
+        <button class="quick-action" onclick="insertQuickReply('I\'ve shared some resources on your dashboard that might help with this question.')">Share Resources</button>
+        <button class="quick-action" onclick="insertQuickReply('I\'ll look into this and get back to you soon.')">Will Follow Up</button>
+      </div>
+      
+      <form class="chat-input" id="message-form" action="{{ url_for('counsellor_send_message') }}" method="POST">
+        <input type="hidden" name="receiver_id" value="{{ student.user_id }}">
+        <input type="text" name="content" id="message-input" placeholder="Type your message..." required autocomplete="off">
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 CareerConnect. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function insertQuickReply(text) {
+      document.getElementById('message-input').value = text;
+      document.getElementById('message-input').focus();
+    }
+  </script>
+  <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</body>
+</html>

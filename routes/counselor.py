@@ -27,7 +27,7 @@ def dashboard():
     
     # Get unread messages
     unread_messages = Message.query.filter_by(
-        receiver_id=current_user.id,
+        receiver_id=current_user.user_id,
         read_at=None
     ).count()
     
@@ -90,6 +90,103 @@ def students():
     
     return render_template('counselor/students.html', students=students)
 
+@counselor.route('/chat_list')
+@login_required
+@role_required('counselor')
+def counsellor_chat_list():
+    """Show list of student conversations for the counselor"""
+    # Find all conversations for the current counselor
+    sent_messages = Message.query.filter_by(sender_id=current_user.user_id).all()
+    received_messages = Message.query.filter_by(receiver_id=current_user.user_id).all()
+    
+    # Get unique user ids from these messages
+    user_ids = set()
+    for msg in sent_messages:
+        user_ids.add(msg.receiver_id)
+    for msg in received_messages:
+        user_ids.add(msg.sender_id)
+        
+    # Also add students assigned to this counselor who might not have messages yet
+    assigned_students = User.query.filter_by(counselor_id=current_user.user_id, user_role='student').all()
+    for student in assigned_students:
+        user_ids.add(student.user_id)
+        
+    conversations = []
+    for user_id in user_ids:
+        other_user = User.query.get(user_id)
+        if not other_user or other_user.user_role != 'student':
+            continue
+            
+        # Get the last message
+        last_message = Message.query.filter(
+            ((Message.sender_id == current_user.user_id) & (Message.receiver_id == user_id)) |
+            ((Message.sender_id == user_id) & (Message.receiver_id == current_user.user_id))
+        ).order_by(Message.sent_at.desc()).first()
+        
+        # Count unread messages
+        unread_count = Message.query.filter_by(
+            sender_id=user_id,
+            receiver_id=current_user.user_id,
+            read_at=None
+        ).count()
+        
+        # Add to conversations list
+        conversations.append({
+            'user': other_user,
+            'last_message': last_message,
+            'unread_count': unread_count
+        })
+    
+    # Sort by last message time, newest first
+    conversations.sort(key=lambda x: x['last_message'].sent_at if x['last_message'] else datetime.min, reverse=True)
+    
+    return render_template('counsellor/chat_list.html', conversations=conversations)
+
+@counselor.route('/send_message', methods=['POST'])
+@login_required
+@role_required('counselor')
+def counsellor_send_message():
+    """Send a new message as counselor"""
+    receiver_id = request.form.get('receiver_id')
+    content = request.form.get('content')
+    
+    if not receiver_id or not content:
+        flash('Invalid message data.', 'danger')
+        return redirect(url_for('counselor.counsellor_chat_list'))
+    
+    # Create new message
+    message = Message(
+        sender_id=current_user.user_id,
+        receiver_id=receiver_id,
+        content=content,
+        sent_at=datetime.utcnow()
+    )
+    
+    db.session.add(message)
+    
+    # Log activity
+    log = ActivityLog(
+        user_id=current_user.user_id,
+        action='Send Message',
+        details=f'Sent message to student {receiver_id}'
+    )
+    db.session.add(log)
+    db.session.commit()
+    
+    # If this is AJAX request, return JSON
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify({
+            'success': True,
+            'message': {
+                'id': message.id,
+                'content': message.content,
+                'time': message.sent_at.strftime('%I:%M %p')
+            }
+        })
+    
+    # Otherwise redirect back to chat
+    return redirect(url_for('auth.chat', user_id=receiver_id))
+
 @counselor.route('/chat', methods=['GET', 'POST'])
 @login_required
 @role_required('counselor')
@@ -107,7 +204,8 @@ def chat():
         message = Message(
             sender_id=current_user.id,
             receiver_id=form.receiver_id.data,
-            content=form.content.data
+            content=form.content.data,
+            sent_at=datetime.utcnow()
         )
         
         db.session.add(message)

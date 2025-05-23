@@ -325,6 +325,57 @@ def create_app(config_class=Config):
             print("Error submitting feedback:", e)
             flash("An error occurred while submitting feedback.", "danger")
             return redirect(url_for('feedback_form'))
+        
+    @app.route('/chat_list')
+    @login_required
+    def chat_list():
+        if current_user.user_role == 'student':
+            return redirect(url_for('auth.chat_list'))
+        elif current_user.user_role == 'counsellor':
+            return redirect(url_for('counselor.counsellor_chat_list'))
+        else:
+            flash('Chat functionality not available for this user role.', 'warning')
+            return redirect(url_for('index'))
+
+    @app.route('/chat/<int:user_id>')
+    @login_required
+    def chat(user_id):
+        return redirect(url_for('auth.chat', user_id=user_id))
+
+    @app.route('/send_message', methods=['POST'])
+    @login_required
+    def send_message():
+        if current_user.user_role == 'student':
+            return redirect(url_for('auth.send_message'))
+        elif current_user.user_role == 'counsellor':
+            return redirect(url_for('counselor.counsellor_send_message'))
+        else:
+            flash('Chat functionality not available for this user role.', 'warning')
+            return redirect(url_for('index'))
+        
+    @app.template_filter('timeago')
+    def timeago_filter(dt):
+        """Format datetime as relative time"""
+        if not dt:
+            return ''
+            
+        now = datetime.utcnow()
+        diff = now - dt
+        
+        seconds = diff.total_seconds()
+        if seconds < 60:
+            return 'just now'
+        elif seconds < 3600:
+            minutes = int(seconds / 60)
+            return f'{minutes} {"minute" if minutes == 1 else "minutes"} ago'
+        elif seconds < 86400:
+            hours = int(seconds / 3600)
+            return f'{hours} {"hour" if hours == 1 else "hours"} ago'
+        elif seconds < 604800:
+            days = int(seconds / 86400)
+            return f'{days} {"day" if days == 1 else "days"} ago'
+        else:
+            return dt.strftime('%b %d, %Y')
 
     # Sample events data
     events = [

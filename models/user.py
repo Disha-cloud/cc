@@ -23,6 +23,13 @@ class User(db.Model, UserMixin):
     date_registered = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime)
 
+    @property
+    def is_online(self):
+        """Check if user was online in the last 5 minutes"""
+        if not self.last_login:
+            return False
+        
+        return (datetime.utcnow() - self.last_login).total_seconds() < 300  # 5 minutes
     
    
     def get_id(self):
