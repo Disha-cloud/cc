@@ -22,19 +22,11 @@ class User(db.Model, UserMixin):
     course = db.Column(db.String(100), nullable=True)
     date_registered = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime)
-class CareerCounselor(db.Model):
-    __tablename__ = 'CareerCounselors'
-    counsellor_id = db.Column(db.Integer, db.ForeignKey('users.user_id', ondelete='CASCADE'), primary_key=True)
-    specialization = db.Column(db.String(100))
-    qualification = db.Column(db.Text)
-    years_of_experience = db.Column(db.Integer)
-    bio = db.Column(db.Text)
-    availability_status = db.Column(db.Boolean, default=True)
-    rating = db.Column(db.Numeric(3, 2), default=0.0)
+
     
-    @property
-    def id(self):
-        return self.user_id
+   
+    def get_id(self):
+        return str(self.user_id)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)
@@ -53,3 +45,13 @@ class CareerCounselor(db.Model):
 
     def __repr__(self):
         return f"<User {self.email} - {self.user_role}>"
+    
+class CareerCounselor(db.Model):
+    __tablename__ = 'CareerCounselors'
+    counsellor_id = db.Column(db.Integer, db.ForeignKey('users.user_id', ondelete='CASCADE'), primary_key=True)
+    specialization = db.Column(db.String(100))
+    qualification = db.Column(db.Text)
+    years_of_experience = db.Column(db.Integer)
+    bio = db.Column(db.Text)
+    availability_status = db.Column(db.Boolean, default=True)
+    rating = db.Column(db.Numeric(3, 2), default=0.0)

@@ -4,8 +4,8 @@ from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
-from models import db, User, Feedback  # Ensure Feedback is imported
+from datetime import datetime, date
+from models import db, User, Feedback, Appointment
 from routes import init_app
 from config import Config
 
@@ -13,7 +13,6 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
-    # Initialize extensions
     db.init_app(app)
     migrate = Migrate(app, db)
 
@@ -29,8 +28,25 @@ def create_app(config_class=Config):
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-    # Register routes/blueprints
     init_app(app)
+
+    # Define calculate_progress function INSIDE create_app
+    def calculate_progress(student):
+        # Safety checks to avoid division by zero and missing attributes
+        recommended_sessions = getattr(student, 'recommended_sessions', 5)
+        recommended_resources = getattr(student, 'recommended_resources', 10)
+        sessions_attended = getattr(student, 'sessions_attended', 0)
+        resources_used = getattr(student, 'resources_used', 0)
+        
+        sessions_progress = min(sessions_attended / recommended_sessions, 1.0) if recommended_sessions > 0 else 0
+        resources_progress = min(resources_used / recommended_resources, 1.0) if recommended_resources > 0 else 0
+        total_progress = int(((sessions_progress + resources_progress) / 2) * 100)
+        
+        return {
+            "sessions_progress": int(sessions_progress * 100),
+            "resources_progress": int(resources_progress * 100),
+            "total_progress": total_progress
+        }
 
     @app.route('/')
     def index():
@@ -49,7 +65,6 @@ def create_app(config_class=Config):
                 login_user(user)
                 user.last_login = datetime.utcnow()
                 db.session.commit()
-
                 if user.user_role == 'admin':
                     return redirect(url_for('admin_dashboard'))
                 elif user.user_role == 'counsellor':
@@ -115,7 +130,29 @@ def create_app(config_class=Config):
             student = current_user
             counselor = User.query.get(student.counselor_id)
             student.counselor_name = f"{counselor.first_name} {counselor.last_name}" if counselor else "Not Assigned"
-            return render_template('auth/dashboard.html', student=student)
+            
+            # Add default values for progress calculation
+            student.sessions_attended = getattr(student, 'sessions_attended', 0)
+            student.recommended_sessions = 5
+            student.resources_used = getattr(student, 'resources_used', 0)
+            student.recommended_resources = 10
+            student.profile_completion = getattr(student, 'profile_completion', 85)  # Default 85%
+            student.assessments_completed = getattr(student, 'assessments_completed', 0)
+            student.assessments_total = 5
+            
+            # Add empty lists/data for template variables
+            student.sessions = getattr(student, 'sessions', [])
+            student.goals = getattr(student, 'goals', [])
+            student.jobs = getattr(student, 'jobs', [])
+            student.resources = getattr(student, 'resources', [])
+            student.notifications = getattr(student, 'notifications', [])
+            student.certificates = getattr(student, 'certificates', [])
+            student.assessment_results = getattr(student, 'assessment_results', [])
+            
+            # Calculate progress
+            progress = calculate_progress(student)
+            
+            return render_template('auth/dashboard.html', student=student, progress=progress)
         else:
             flash('Access denied.', 'danger')
             return redirect(url_for('index'))
@@ -205,19 +242,47 @@ def create_app(config_class=Config):
             flash("Only students can book appointments.", "danger")
             return redirect(url_for('index'))
 
+        today = date.today().isoformat()
         student = current_user
+        counsellor = User.query.get(student.counselor_id)
 
         if request.method == 'POST':
-            appointment_date = request.form.get('appointment_date')
-            appointment_time = request.form.get('appointment_time')
-            purpose = request.form.get('purpose')
+            try:
+                appointment_date = request.form.get('appointment_date')
+                appointment_time = request.form.get('appointment_time')
+                appointment_mode = request.form.get('mode')
+                location_or_link = request.form.get('location_or_link')
+                fee = request.form.get('fee') or 0.00
 
-            # Here you could add saving to the database
+                start_datetime = datetime.strptime(f"{appointment_date} {appointment_time}", "%Y-%m-%d %H:%M")
 
-            flash('Appointment booked successfully!', 'success')
-            return redirect(url_for('student_dashboard'))
+                new_appointment = Appointment(
+                    student_id=student.id,
+                    counsellor_id=student.counselor_id,
+                    appointment_date=appointment_date,
+                    start_time=start_datetime,
+                    end_time=None,
+                    status='scheduled',
+                    mode=appointment_mode,
+                    meeting_link=location_or_link if appointment_mode == 'online' else None,
+                    location=location_or_link if appointment_mode in ['offline', 'phone'] else None,
+                    is_free=(float(fee) == 0.00),
+                    fee=fee,
+                    payment_status='not_required' if float(fee) == 0.00 else 'pending'
+                )
+                db.session.add(new_appointment)
+                db.session.commit()
 
-        return render_template('auth/appointment.html', student=student)
+                flash('Appointment booked successfully!', 'success')
+                return redirect(url_for('student_dashboard'))
+            except Exception as e:
+                db.session.rollback()
+                print("Error booking appointment:", e)
+                flash("An error occurred while booking your appointment.", "danger")
+
+        return render_template('auth/appointment.html', student=student, counsellor=counsellor, today=today)
+
+    # REMOVED THE DUPLICATE /dashboard ROUTE THAT WAS CAUSING ISSUES
 
     @app.route('/auth/feedback', methods=['GET'])
     @login_required
@@ -228,9 +293,9 @@ def create_app(config_class=Config):
 
         student = current_user
         assigned_mentor = User.query.filter_by(id=student.counselor_id).first()
-
+        
         return render_template(
-            'feedback.html',
+            'auth/feedback.html',
             mentor_name=assigned_mentor.first_name + " " + assigned_mentor.last_name if assigned_mentor else "No Mentor Assigned",
             mentor_id=assigned_mentor.id if assigned_mentor else None
         )
@@ -261,6 +326,7 @@ def create_app(config_class=Config):
             flash("An error occurred while submitting feedback.", "danger")
             return redirect(url_for('feedback_form'))
 
+    # Sample events data
     events = [
         {"title": "Career Fair", "date": "2025-05-27", "description": "A virtual career expo with 30+ companies."},
         {"title": "STEM Workshop", "date": "2025-05-30", "description": "Hands-on learning for STEM careers."},
@@ -310,4 +376,4 @@ def create_app(config_class=Config):
 app = create_app()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5001)

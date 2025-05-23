@@ -49,11 +49,11 @@
     h2, h3 {
       color: #2c3e50;
     }
-    .profile-info, .session-list, .resource-list {
+    .profile-info, .session-list, .resource-list, .progress-list, .goals-list, .jobs-list, .notifications-list, .certificates-list {
       list-style-type: none;
       padding: 0;
     }
-    .profile-info li, .session-list li, .resource-list li {
+    .profile-info li, .session-list li, .resource-list li, .progress-list li, .goals-list li, .jobs-list li, .notifications-list li, .certificates-list li {
       margin-bottom: 0.5rem;
     }
     .btn-action {
@@ -69,6 +69,35 @@
     }
     .btn-action:hover {
       background:rgb(94, 98, 162);
+    }
+    .progress-bar-container {
+      background: #e0e6f7;
+      border-radius: 5px;
+      margin-bottom: 0.7rem;
+      height: 18px;
+      width: 100%;
+      overflow: hidden;
+    }
+    .progress-bar {
+      background: #2c3e50;
+      height: 100%;
+      color: white;
+      text-align: right;
+      padding-right: 8px;
+      font-size: 0.85rem;
+      line-height: 18px;
+      border-radius: 5px 0 0 5px;
+      transition: width 0.4s;
+    }
+    .badge {
+      display: inline-block;
+      background: #e8eaf6;
+      color: #3949ab;
+      border-radius: 12px;
+      padding: 0.2rem 0.7rem;
+      font-size: 0.85rem;
+      margin-right: 0.5rem;
+      margin-bottom: 0.3rem;
     }
     footer {
       text-align: center;
@@ -88,11 +117,15 @@
   </header>
 
   <main class="dashboard-container">
+
+    <!-- Welcome Section -->
     <section class="welcome-section">
       <h2>Welcome, {{ student.first_name }} 👋</h2>
       <p>Your personalized career dashboard</p>
     </section>
 
+
+    <!-- Profile Section -->
     <section class="profile-section">
       <h3>Your Profile</h3>
       <ul class="profile-info">
@@ -106,6 +139,54 @@
       </ul>
     </section>
 
+    <section class="progress-section">
+      <h3>Your Progress</h3>
+      <div>
+        <strong>Overall Progress:</strong>
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="width: {{ progress.total_progress }}%;">{{ progress.total_progress }}%</div>
+        </div>
+      </div>
+    
+      <div style="margin-top:1em;">
+        <strong>Sessions Attended:</strong> {{ student.sessions_attended }} / {{ student.recommended_sessions }}
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="width: {{ progress.sessions_progress }}%;">{{ progress.sessions_progress }}%</div>
+        </div>
+      </div>
+    
+      <div style="margin-top:1em;">
+        <strong>Resources Used:</strong> {{ student.resources_used }} / {{ student.recommended_resources }}
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="width: {{ progress.resources_progress }}%;">{{ progress.resources_progress }}%</div>
+        </div>
+      </div>
+    </section>
+    
+
+    <!-- Goals & Action Plans -->
+    <section class="goals-section">
+      <h3>Your Goals</h3>
+      {% if student.goals %}
+        <ul class="goals-list">
+          {% for goal in student.goals %}
+            <li>{{ goal.text }} {% if goal.completed %}<span class="badge">Completed</span>{% endif %}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No goals set yet.</p>
+      {% endif %}
+      <a href="/auth/goals" class="btn-action">➕ Add New Goal</a>
+    </section>
+
+    <!-- Resume Builder -->
+    <section class="resume-section">
+      <h3>Resume Builder</h3>
+      <p>Create a professional resume in minutes.</p>
+      <a href="/auth/resume" class="btn-action">📄 Build Resume</a>
+    </section>
+
+    <!-- Upcoming Sessions -->
     <section class="session-section">
       <h3>Upcoming Sessions</h3>
       {% if student.sessions %}
@@ -122,6 +203,22 @@
       <a href="/auth/appointment" class="btn-action">📅 Book an Appointment</a>
     </section>
 
+    <!-- Job & Internship Opportunities -->
+    <section class="jobs-section">
+      <h3>Job & Internship Opportunities</h3>
+      {% if student.jobs %}
+        <ul class="jobs-list">
+          {% for job in student.jobs %}
+            <li><a href="{{ job.link }}" target="_blank">{{ job.title }}</a></li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No job or internship postings available right now.</p>
+      {% endif %}
+      <a href="/auth/jobs" class="btn-action">🔍 View All</a>
+    </section>
+
+    <!-- Recommended Resources -->
     <section class="resources-section">
       <h3>Recommended Resources</h3>
       {% if student.resources %}
@@ -135,11 +232,55 @@
       {% endif %}
     </section>
 
+    <!-- Notifications & Announcements -->
+    <section class="notifications-section">
+      <h3>Notifications</h3>
+      {% if student.notifications %}
+        <ul class="notifications-list">
+          {% for note in student.notifications %}
+            <li>{{ note }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No new notifications.</p>
+      {% endif %}
+    </section>
+
+   
+
+    <!-- Counselor Chat/Message -->
+    <section class="chat-section">
+      <h3>Message Your Counselor</h3>
+      <a href="/auth/chat" class="btn-action">💬 Start Chat</a>
+    </section>
+
+    <!-- Certificates & Achievements -->
+    <section class="certificates-section">
+      <h3>Certificates & Achievements</h3>
+      {% if student.certificates %}
+        <ul class="certificates-list">
+          {% for cert in student.certificates %}
+            <li>{{ cert.title }} – {{ cert.date }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No certificates or achievements yet.</p>
+      {% endif %}
+    </section>
+
+    <!-- FAQs & Support -->
+    <section class="faq-section">
+      <h3>FAQs & Support</h3>
+      <a href="/auth/faq" class="btn-action">❓ Get Help</a>
+    </section>
+
+    <!-- Feedback -->
     <section class="feedback-section">
       <h3>Feedback</h3>
       <p>Help us improve your experience.</p>
       <a href="/auth/feedback" class="btn-action">💬 Give Feedback</a>
     </section>
+
   </main>
 
   <footer>

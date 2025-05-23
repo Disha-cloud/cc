@@ -56,6 +56,13 @@
   }
 
   body {
+    background:
+      linear-gradient(rgba(30, 30, 60, 0.4), rgba(30, 30, 60, 0.4)), /* semi-transparent dark overlay */
+      url('/static/images/bag.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     background-color: var(--background-color);
     color: var(--dark-text);
     line-height: 1.6;
@@ -67,6 +74,9 @@
     padding-top: 80px;
     overflow-x: hidden;
   }
+  
+  
+  
 
   .navbar {
     background-color: white;
@@ -251,13 +261,14 @@
   }
 </style>
 <body>
+  
   <header class="navbar">
     <div class="logo">CareerConnect</div>
     <nav>
       <a href="/about" class="btn">About Us</a>
       <a href="/events" class="btn">Upcoming Events</a>
       
-      <span class="btn" style="background-color: transparent; color: var(--primary-color); font-weight: bold; cursor: default;">
+      <span class="btn" style="background-color: transparent; color: var(--primary-color); font-weight: bold; cursor: default;" >
         📞 24/7 Support: +91-9876543210
       </span>
     </nav>

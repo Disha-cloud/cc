@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Book Appointment - CareerConnect</title>
+  <style>
+    /* Luxurious Pinterest-style CSS - Internal */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    :root {
+      --primary-color: #2e2a5d;
+      --secondary-color: #3f3a72;
+      --accent-color: #9473e6;
+      --background-color: #f4f4fb;
+      --dark-text: #1f1e2e;
+      --medium-text: #3e3b5b;
+      --light-text: #6b6b91;
+      --shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.1);
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --container-width: 1200px;
+    }
+
+    body {
+      background-color: var(--background-color);
+      color: var(--dark-text);
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .navbar {
+      background-color: white;
+      width: 100%;
+      max-width: var(--container-width);
+      padding: 1rem 2rem;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    nav {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .btn {
+      padding: 0.6rem 1.4rem;
+      background-color: var(--primary-color);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background-color: var(--accent-color);
+    }
+
+    .appointments-container {
+      background-color: white;
+      padding: 2.5rem;
+      margin-top: 2rem;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      max-width: 800px;
+      width: 100%;
+    }
+
+    .appointments-container h2 {
+      font-size: 1.8rem;
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--light-text);
+      margin-bottom: 2rem;
+    }
+
+    .appointment-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--medium-text);
+    }
+
+    input, select, textarea {
+      padding: 0.8rem;
+      border: 2px solid #e0e0f8;
+      border-radius: var(--radius-md);
+      background-color: #f8f9ff;
+      font-size: 1rem;
+      transition: border 0.3s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 0.8rem;
+      border: none;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent-color);
+    }
+
+    footer {
+      background-color: var(--primary-color);
+      padding: 2rem 0;
+      color: white;
+      text-align: center;
+      margin-top: 4rem;
+      width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .appointments-container {
+        padding: 2rem;
+        margin: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">CareerConnect</div>
+    <nav>
+      <a href="{{ url_for('dashboard') }}" class="btn">Dashboard</a>
+    </nav>
+  </header>
+
+  <section class="appointments-container">
+    <h2>Book a Counselling Appointment</h2>
+    <p class="subtitle">Choose your preferred date and time with your assigned counselor.</p>
+
+    <form action="{{ url_for('appointment') }}" method="POST" class="appointment-form">
+      <input type="hidden" name="student_id" value="{{ student.id }}">
+      <input type="hidden" name="counselor_id" value="{{ student.counselor_id }}">
+
+      <div class="form-group">
+        <label for="appointment_date">Select Date:</label>
+        <input type="date" id="appointment_date" name="appointment_date" required min="{{ today }}">
+      </div>
+
+      <div class="form-group">
+        <label for="appointment_time">Select Time:</label>
+        <select id="appointment_time" name="appointment_time" required>
+          <option value="9:00 AM">9:00 AM</option>
+          <option value="10:00 AM">10:00 AM</option>
+          <option value="11:00 AM">11:00 AM</option>
+          <option value="12:00 PM">12:00 PM</option>
+          <option value="1:00 PM">1:00 PM</option>
+          <option value="2:00 PM">2:00 PM</option>
+          <option value="3:00 PM">3:00 PM</option>
+          <option value="4:00 PM">4:00 PM</option>
+          <option value="5:00 PM">5:00 PM</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="mode">Mode of Appointment:</label>
+        <select id="mode" name="mode" required>
+          <option value="online">Online</option>
+          <option value="offline">Offline</option>
+          <option value="phone">Phone</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="meeting_link">Meeting Link (if online):</label>
+        <input type="url" id="meeting_link" name="meeting_link" placeholder="https://meet.example.com">
+      </div>
+
+      <div class="form-group">
+        <label for="location">Location (if offline):</label>
+        <input type="text" id="location" name="location" placeholder="e.g., Room 101">
+      </div>
+
+      <div class="form-group">
+        <label><input type="checkbox" id="is_free" name="is_free" value="1" onchange="toggleFee()"> Free Appointment</label>
+      </div>
+
+      <div class="form-group" id="fee_field">
+        <label for="fee">Fee (₹):</label>
+        <input type="number" id="fee" name="fee" min="0" step="100">
+      </div>
+
+      <div class="form-group">
+        <label for="reason">Reason (Optional):</label>
+        <textarea id="reason" name="reason" rows="3" placeholder="e.g., Need help with resume, etc."></textarea>
+      </div>
+
+      <button type="submit" class="btn-primary">Book Appointment</button>
+    </form>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 CareerConnect. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function toggleFee() {
+      const isFree = document.getElementById('is_free').checked;
+      document.getElementById('fee_field').style.display = isFree ? 'none' : 'block';
+    }
+    window.onload = toggleFee;
+  </script>
+</body>
+</html>

@@ -35,8 +35,6 @@ CREATE TABLE appointments (
     is_free BOOLEAN DEFAULT FALSE,
     fee DECIMAL(10,2),
     payment_status ENUM('paid', 'pending', 'not_required') DEFAULT 'not_required',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (student_id) REFERENCES users(user_id),
     FOREIGN KEY (counsellor_id) REFERENCES users(user_id)
 );
